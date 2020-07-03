@@ -93,23 +93,34 @@
     <div id="contact" class="p-4">
       <div class="row justify-content-center mt-3 mb-3">
 
-        <div class="col-lg-4">
+        <div v-if="show_contact == true" class="col-lg-4">
           <h2>Have Any Questions?</h2>
           <p>Contact us by filling out the information below</p>
 
-          <form>
+          <div v-if="contact_notice != ''" class="alert alert-warning">
+            There was a problem submitting your message. {{contact_notice}}
+          </div>
+
+          <form @submit.prevent="sendContactMessage()">
             <div class="form-group text-left ">
-              <input type="email"
+              <input v-model="contact_email"
+                     type="email"
                      class="form-control"
                      placeholder="Enter Your Email"
                      >
-              <textarea class="form-control mt-3"
+              <textarea v-model="contact_message"
+                        class="form-control mt-3"
                         placeholder="Enter Your Message"
                         rows="5"
               ></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Send Message</button>
           </form>
+        </div>
+
+        <div v-else>
+          <h3>Message Sent Successfully!</h3>
+          <p>Thank you for contacting us, we'll get back to you as soon as we can.</p>
         </div>
       </div>
 
@@ -138,6 +149,10 @@ export default {
       title: 'Travel Treasury',
       email: '',
       message: '',
+      show_contact: true,
+      contact_email: '',
+      contact_message: '',
+      contact_notice: '',
     }
   },
   methods: {
@@ -160,6 +175,29 @@ export default {
         password += chars.charAt(i);
       }
       return password;
+    },
+
+    sendContactMessage() {
+      if (!this.validEmail(this.contact_email)) {
+        this.contact_notice = 'The email address is badly formatted.';
+
+      } else if (this.contact_message.length < 10) {
+        this.contact_notice = "Your message is too short";
+
+      } else {
+        const url = `https://us-central1-travel-budget-eefcd.cloudfunctions.net/sendEmail?email_from=${this.contact_email}&message=${this.contact_message}`
+        const requestOptions = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        };
+        fetch(url, requestOptions);
+        this.show_contact = false;
+      }
+    },
+
+    validEmail(email) {
+      var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
     }
   }
 }
