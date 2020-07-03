@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
+    "firebase": "^7.15.5",
     "jquery": "^3.5.1",
     "popper.js": "^1.16.1",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuefire": "^2.2.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

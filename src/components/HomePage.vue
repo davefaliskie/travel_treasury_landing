@@ -21,16 +21,20 @@
 
             <div class="border p-3 p-md-5 bg-white rounded shadow">
               <h2>Coming Soon</h2>
-              <form>
+              <form @submit.prevent="addEmail(email)">
                 <div class="form-group">
                   <label for="emailSignup">Reserve your account now, we'll contact you when it's live</label>
-                  <input id="emailSignup"
+                  <input v-model="email"
+                         type="email"
+                         id="emailSignup"
                          placeholder="Enter Email"
                          class="form-control"
                   >
                   <small id="emailHelp" class="form-text text-muted">We'll never share your email address</small>
                   <button type="submit" class="btn btn-success mt-3">Join Waiting List</button>
-
+                  <div class="mt-4">
+                    <p class="m-0">{{ message }}</p>
+                  </div>
                 </div>
               </form>
             </div>
@@ -126,11 +130,36 @@
 </template>
 
 <script>
+import { Auth } from '@/firebase/auth.js'
+
 export default {
   data () {
     return {
       title: 'Travel Treasury',
-      message: ''
+      email: '',
+      message: '',
+    }
+  },
+  methods: {
+    async addEmail(email) {
+      var noticeMessage = "🎉 Your account has been reserved 🎉"
+      await Auth.createUserWithEmailAndPassword(email, this.randomPassword(20)).catch(function(error) {
+        if (error.code != "auth/email-already-in-use") {
+          noticeMessage = error.message;
+        }
+      });
+      this.message = noticeMessage;
+      this.email = '';
+    },
+
+    randomPassword(length) {
+      var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-+<>ABCDEFGHIJKLMNOP1234567890";
+      var password = "";
+      for (var x = 0; x < length; x++) {
+        var i = Math.floor(Math.random() * chars.length);
+        password += chars.charAt(i);
+      }
+      return password;
     }
   }
 }
