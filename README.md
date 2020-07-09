@@ -1,4 +1,4 @@
-# travel_treasury_landing
+# Travel Treasury Landing Page
 
 > A Vue.js single route landing page which includes a sign up for waiting list email filed. When filled out the users email will be saved to firebase auth. The page also includes a working contact form.
 
